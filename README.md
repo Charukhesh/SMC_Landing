@@ -1,61 +1,85 @@
-# Sliding-Mode–Based Instantaneously Optimal Guidance for Precision Soft Landing on Asteroids
+# Thrust-Limited Sliding-Mode–Based Instantaneously Optimal Guidance  
+## Fuel-Aware Precision Soft Landing on Asteroids
 
 ## Overview
 
-This repository contains a **MATLAB implementation and extension** of the guidance framework proposed in the paper:
+This repository presents a **MATLAB implementation and research extension** of the guidance framework introduced in:
 
 > **Sliding-Mode-Control–Based Instantaneously Optimal Guidance for Precision Soft Landing on Asteroid**
 
-The original work introduces a guidance law that combines **sliding-mode control (SMC)** with **instantaneous optimality**, enabling precise and robust soft landing on small celestial bodies under severe uncertainty and low-gravity conditions.
+While the original paper formulates an **unconstrained instantaneously optimal sliding-mode guidance law**, this project extends the framework by **explicitly incorporating thrust magnitude limits as nonlinear constraints**.  
+This modification transforms the guidance problem from a convex instantaneous optimization into a **non-convex, fuel-aware constrained control problem**, bringing the formulation closer to **realistic spacecraft propulsion limits**.
 
-This repository translates the theoretical formulation into a **modular, simulation-ready codebase**, designed for:
-- Reproducibility
-- Readability
-- Extension to new asteroid models, vehicle dynamics, or guidance objectives
+The repository therefore focuses on:
+- Enforcing **physical thrust bounds**
+- Studying their effect on optimality and convergence
+- Designing **fuel-efficient guidance laws** under actuator constraints
 
----
+## Motivation for the Extension
 
-## Motivation
+The original formulation assumes that the optimal control computed instantaneously is **fully realizable by the actuator**.  
+In practical asteroid landing missions, this assumption is rarely valid:
 
-Asteroid landing presents several challenges:
-- Extremely low and uncertain gravity
-- Limited sensing and computational resources
-- Strict terminal constraints (zero velocity at touchdown)
-- Sensitivity to modeling errors
+- Thrusters have **strict magnitude limits**
+- Saturation can destabilize classical sliding-mode designs
+- Fuel consumption must be minimized to maximize mission viability
 
-Classical optimal control methods often require solving computationally expensive optimization problems over a full time horizon.  
-This framework avoids that by enforcing optimality **locally in time**, while guaranteeing **global convergence** using sliding-mode principles.
+Introducing thrust limits fundamentally changes the nature of the problem:
+- The instantaneous optimization becomes **non-convex**
+- Classical analytical optimal solutions are no longer guaranteed
+- Trade-offs emerge between convergence speed, robustness, and fuel usage
 
----
+This repository explores these trade-offs explicitly.
 
-## Core Concept (Intuitive Explanation)
+## Core Concept (Extended Framework)
 
-The guidance strategy operates as follows:
+The extended guidance strategy operates as follows:
 
-1. **Define a sliding variable** that encodes landing objectives  
-   (e.g., position error and velocity error).
+1. **Sliding Variable Definition**  
+   A sliding variable is constructed from position and velocity errors to encode terminal landing objectives.
 
-2. **Design a sliding-mode control law** that forces the system to converge to this surface despite uncertainties.
+2. **Instantaneously Optimal Control Formulation**  
+   At each time step, a local cost (related to control effort / fuel usage) is minimized **instantaneously**, rather than over a full horizon.
 
-3. **Embed instantaneous optimality**, ensuring the control input minimizes a local cost (such as control effort) at each time step without solving a full optimal control problem.
+3. **Nonlinear Thrust Constraints**  
+   The control input is constrained by:
+   - Upper and lower thrust bounds
+   - Directional feasibility due to heading dynamics  
 
-The result is a guidance law that is:
-- Robust
-- Computationally efficient
-- Well-suited for real-time implementation
+   These constraints introduce **non-convexity** into the instantaneous optimization problem.
 
----
+4. **Constraint-Aware Sliding Enforcement**  
+   The control law is designed to:
+   - Respect thrust limits
+   - Preserve sliding-mode convergence
+   - Avoid excessive fuel consumption or aggressive switching
+
+The result is a **physically realizable, fuel-aware guidance law** that retains the robustness properties of sliding-mode control.
+
+## Key Contributions of This Repository
+
+Compared to the original paper, this implementation:
+
+- Introduces **explicit thrust magnitude constraints**
+- Handles the resulting **non-convex instantaneous optimization**
+- Demonstrates the impact of actuator limits on:
+  - Landing accuracy
+  - Convergence rate
+  - Fuel efficiency
+- Provides a **modular simulation framework** for further extensions
+
+This makes the work suitable not only for theoretical analysis, but also for **mission-relevant design studies**.
 
 ## Repository Structure
 
 ```text
 .
-├── main.m                    # Main simulation entry point
-├── Optimizer.m               # Instantaneously optimal control computation
+├── main.m                    # Simulation entry point with thrust-limited guidance
+├── Optimizer.m               # Non-convex instantaneous optimization with thrust bounds
 ├── SlidingVariable.m         # Sliding surface definition
-├── HeadingErrorDynamics.m    # Direction / heading error dynamics
-├── VelocityProfile.m         # Reference velocity shaping for soft landing
-├── GetGravity.m              # Asteroid gravity model
-├── utilities.m               # Shared helper functions
-├── plots.m                   # Visualization of simulation results
+├── HeadingErrorDynamics.m    # Thrust direction and heading error dynamics
+├── VelocityProfile.m         # Fuel-aware reference velocity shaping
+├── GetGravity.m              # Low-gravity asteroid environment model
+├── utilities.m               # Shared helper and math utilities
+├── plots.m                   # Trajectory, control, and fuel-efficiency visualization
 └── README.md
