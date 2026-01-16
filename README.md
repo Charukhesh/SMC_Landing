@@ -1,4 +1,4 @@
-# Thrust-Limited Sliding-Mode–Based Instantaneously Optimal Guidance  
+# Thrust-Limited Sliding-Mode-Based Instantaneously Optimal Guidance  
 ## Fuel-Aware Precision Soft Landing on Asteroids
 
 ## Overview
@@ -55,20 +55,6 @@ The extended guidance strategy operates as follows:
    - Avoid excessive fuel consumption or aggressive switching
 
 The result is a **physically realizable, fuel-aware guidance law** that retains the robustness properties of sliding-mode control.
-
-## Key Contributions of This Repository
-
-Compared to the original paper, this implementation:
-
-- Introduces **explicit thrust magnitude constraints**
-- Handles the resulting **non-convex instantaneous optimization**
-- Demonstrates the impact of actuator limits on:
-  - Landing accuracy
-  - Convergence rate
-  - Fuel efficiency
-- Provides a **modular simulation framework** for further extensions
-
-This makes the work suitable not only for theoretical analysis, but also for **mission-relevant design studies**.
 
 ## Repository Structure
 
